@@ -28,12 +28,17 @@ public class moving2Start2 extends Application {
 
 	private static boolean top = false, bottom = true, right = true, left = false;
 
+	int player = 0;
+
 	int randomNumX = 3, randomNumY = 3;
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 
+	/**
+	 * creates the objects
+	 */
 	@Override
 	public void start(Stage stage) throws Exception {
 		final Circle circle = createCircle();
@@ -47,21 +52,37 @@ public class moving2Start2 extends Application {
 		moveRecOnKeyRelease(scene, rec1, rec2);
 
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
 	}
 
+	/**
+	 * creates an label at the top of the Scene
+	 * 
+	 * @return
+	 */
 	private Label createInstructions() {
 		Label instructions = new Label("Use the UP DOWN keys to move the right. Use the S W Keys to Move the left");
 		instructions.setTextFill(Color.FORESTGREEN);
 		return instructions;
 	}
 
+	/**
+	 * creates the Circle to a specific location and a Radius
+	 * 
+	 * @return
+	 */
 	private Circle createCircle() {
 		final Circle circle = new Circle(500, 200, 20, Color.BLUEVIOLET);
 		circle.setOpacity(0.7);
 		return circle;
 	}
 
+	/**
+	 * sets the left Rectangle with position and size
+	 * 
+	 * @return
+	 */
 	private Rectangle createRectangle1() {
 		final Rectangle Rectangle1 = new Rectangle(20, 150, Color.BLUEVIOLET);
 		Rectangle1.setOpacity(0.7);
@@ -70,6 +91,11 @@ public class moving2Start2 extends Application {
 		return Rectangle1;
 	}
 
+	/**
+	 * sets the right Rectangle with position and size
+	 * 
+	 * @return
+	 */
 	private Rectangle createRectangle2() {
 		final Rectangle Rectangle2 = new Rectangle(20, 150, Color.BLUEVIOLET);
 		Rectangle2.setOpacity(0.7);
@@ -78,26 +104,26 @@ public class moving2Start2 extends Application {
 		return Rectangle2;
 	}
 
+	/**
+	 * the repeat for the Rectangulars and the Circle
+	 * 
+	 * @param circle
+	 * @param rec2
+	 * @param rec1
+	 * @return
+	 */
 	private TranslateTransition createTranslateTransition(final Circle circle, final Rectangle rec2,
 			final Rectangle rec1) {
 		final TranslateTransition transition = new TranslateTransition(TRANSLATE_DURATION, circle);
-
-		if (end == true) {
-			End();
-			transition.stop();
-		}
-
 		transition.setOnFinished(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent t) {
 				Keymovent(rec1, rec2);
 				if (circle.getCenterX() <= 5) {
-					System.out.println("player 2 winns");
-					createTranslateTransition(circle, rec1, rec2);
+					player = 1;
 					end = true;
 				} else if (circle.getCenterX() >= 1000) {
-					System.out.println("player 1 winns");
-					createTranslateTransition(circle, rec1, rec2);
+					player = 2;
 					end = true;
 				} else if (circle.getCenterY() >= 480 || circle.getCenterY() <= 20) {
 					if (circle.getCenterY() >= 490) {
@@ -120,7 +146,7 @@ public class moving2Start2 extends Application {
 					randomNumX = r.nextInt(max - min) + min;
 					left = false;
 					right = true;
-					
+
 					coutup++;
 				} else if (circle.getCenterY() <= (rec2.getLayoutY() + 150) && circle.getCenterY() >= rec2.getLayoutY()
 						&& circle.getCenterX() >= 950) {
@@ -129,7 +155,7 @@ public class moving2Start2 extends Application {
 					randomNumX = r.nextInt(max - min) + min;
 					left = true;
 					right = false;
-					
+
 					coutup++;
 				}
 
@@ -189,12 +215,28 @@ public class moving2Start2 extends Application {
 				circle.setTranslateX(0);
 				circle.setTranslateY(0);
 
-				moveCircleOnSpacePress(circle, transition, rec1, rec2);
+				if (end == true) {
+					End();
+					transition.stop();
+					transition.pause();
+					System.out.println("player 1 / 2 winns");
+
+					circle.setCenterX(500);
+					circle.setCenterY(200);
+
+					randomNumX = 0;
+					randomNumX = 0;
+				}
+
+				moveCircleOnSpacePress(circle, transition);
 			}
 		});
 		return transition;
 	}
 
+	/*
+	 * gets the Key press and gets the code to true
+	 */
 	private void moveRecOnKeyPress(Scene scene, final Rectangle rec2, final Rectangle rec1, final Circle circle,
 			final TranslateTransition transition) {
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -202,7 +244,7 @@ public class moving2Start2 extends Application {
 			public void handle(KeyEvent event) {
 
 				if (event.getCode() == KeyCode.SPACE || space == true) {
-					moveCircleOnSpacePress(circle, transition, rec1, rec2);
+					moveCircleOnSpacePress(circle, transition);
 					space = true;
 				}
 
@@ -241,6 +283,13 @@ public class moving2Start2 extends Application {
 		});
 	}
 
+	/**
+	 * gets the Key Release and sets the code to false
+	 * 
+	 * @param scene
+	 * @param rec2
+	 * @param rec1
+	 */
 	private void moveRecOnKeyRelease(Scene scene, final Rectangle rec2, final Rectangle rec1) {
 		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
@@ -264,33 +313,27 @@ public class moving2Start2 extends Application {
 		});
 	}
 
-	private void moveCircleOnSpacePress(final Circle circle, final TranslateTransition transition, final Rectangle rec2,
-			final Rectangle rec1) {
+	/**
+	 * moves the circle to the position x and y
+	 * 
+	 * @param circle
+	 * @param transition
+	 * @param rec2
+	 * @param rec1
+	 */
+	private void moveCircleOnSpacePress(final Circle circle, final TranslateTransition transition) {
 		transition.setToX(x - circle.getCenterX());
 		transition.setToY(y - circle.getCenterY());
 
 		transition.playFromStart();
 	}
 
-	@FXML
-	public void End() {
-		randomNumX = 0;
-		randomNumY = 0;
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle(null);
-		alert.setHeaderText(null);
-		alert.setContentText("Good game. You won! Click OK to exit.");
-
-		alert.setOnHidden(evt -> Platform.exit());
-
-		alert.show();
-		try {
-			alert.wait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * Moves the Rectangulars up or down
+	 * 
+	 * @param rec1
+	 * @param rec2
+	 */
 	@FXML
 	public void Keymovent(final Rectangle rec1, final Rectangle rec2) {
 		if (r11 == true) {
@@ -328,5 +371,31 @@ public class moving2Start2 extends Application {
 				r22 = true;
 			}
 		}
+	}
+
+	/**
+	 * Pop up at the end to now if Player 1 or Player 2 has won
+	 */
+	@FXML
+	public void End() {
+		String text = null;
+		if (player == 1) {
+			text = "GG. Player 1 won! Click Ok to exit.";
+		} else if (player == 2) {
+			text = "GG. Player 2 won! Click Ok to exit.";
+		}
+
+		randomNumX = 0;
+		randomNumY = 0;
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(null);
+		alert.setHeaderText(null);
+		alert.setContentText(text);
+
+		alert.setOnHidden(evt -> Platform.exit());
+
+		alert.show();
+
+		alert.showAndWait();
 	}
 }
