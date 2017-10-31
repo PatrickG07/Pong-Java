@@ -126,13 +126,13 @@ public class moving2Start2 extends Application {
 					player = 2;
 					end = true;
 				} else if (circle.getCenterY() >= 480 || circle.getCenterY() <= 20) {
-					if (circle.getCenterY() >= 490) {
+					if (circle.getCenterY() >= 490 && top == true) {
 						// bottom
 						Random r = new Random();
 						randomNumY = r.nextInt(max - min) + min;
 						top = false;
 						bottom = true;
-					} else if (circle.getCenterY() <= 20) {
+					} else if (circle.getCenterY() <= 20 && bottom == true) {
 						// Top
 						Random r = new Random();
 						randomNumY = r.nextInt(max - min) + min;
@@ -140,7 +140,7 @@ public class moving2Start2 extends Application {
 						bottom = false;
 					}
 				} else if (circle.getCenterY() <= (rec1.getLayoutY() + 150) && circle.getCenterY() >= rec1.getLayoutY()
-						&& circle.getCenterX() <= 50) {
+						&& circle.getCenterX() <= 50 && left == true) {
 					// left Box
 					Random r = new Random();
 					randomNumX = r.nextInt(max - min) + min;
@@ -149,7 +149,7 @@ public class moving2Start2 extends Application {
 
 					coutup++;
 				} else if (circle.getCenterY() <= (rec2.getLayoutY() + 150) && circle.getCenterY() >= rec2.getLayoutY()
-						&& circle.getCenterX() >= 950) {
+						&& circle.getCenterX() >= 950 && right == true) {
 					// Right Box
 					Random r = new Random();
 					randomNumX = r.nextInt(max - min) + min;
@@ -175,38 +175,47 @@ public class moving2Start2 extends Application {
 				case 10:
 					min = min + 1;
 					max = max + 1;
+					coutup++;
 					break;
-				case 20:
+				case 21:
 					min = min + 1;
 					max = max + 1;
+					coutup++;
 					break;
-				case 30:
+				case 31:
 					min = min + 2;
 					max = max + 2;
+					coutup++;
 					break;
-				case 40:
+				case 41:
 					min = min + 2;
 					max = max + 2;
+					coutup++;
 					break;
-				case 50:
+				case 51:
 					min = min + 3;
 					max = max + 3;
+					coutup++;
 					break;
-				case 60:
+				case 61:
 					min = min + 3;
 					max = max + 3;
+					coutup++;
 					break;
-				case 70:
+				case 71:
 					min = min + 4;
 					max = max + 4;
+					coutup++;
 					break;
-				case 80:
+				case 81:
 					min = min + 4;
 					max = max + 4;
+					coutup++;
 					break;
-				case 90:
+				case 91:
 					min = min + 5;
 					max = max + 5;
+					coutup++;
 					break;
 				}
 
@@ -217,17 +226,16 @@ public class moving2Start2 extends Application {
 
 				if (end == true) {
 					End();
-					transition.stop();
+
 					transition.pause();
-					System.out.println("player 1 / 2 winns");
+					transition.stop();
 
 					circle.setCenterX(500);
 					circle.setCenterY(200);
 
 					randomNumX = 0;
-					randomNumX = 0;
+					randomNumY = 0;
 				}
-
 				moveCircleOnSpacePress(circle, transition);
 			}
 		});
@@ -257,7 +265,7 @@ public class moving2Start2 extends Application {
 				}
 
 				if (event.getCode() == KeyCode.S || r12 == true) {
-					if (rec1.getLayoutY() == 340) {
+					if (rec1.getLayoutY() == 350) {
 
 					} else {
 						r12 = true;
@@ -273,7 +281,7 @@ public class moving2Start2 extends Application {
 				}
 
 				if (event.getCode() == KeyCode.DOWN || r22 == true) {
-					if (rec2.getLayoutY() == 340) {
+					if (rec2.getLayoutY() == 350) {
 
 					} else {
 						r22 = true;
@@ -314,19 +322,20 @@ public class moving2Start2 extends Application {
 	}
 
 	/**
-	 * moves the circle to the position x and y
-	 * 
-	 * @param circle
-	 * @param transition
-	 * @param rec2
-	 * @param rec1
-	 */
-	private void moveCircleOnSpacePress(final Circle circle, final TranslateTransition transition) {
-		transition.setToX(x - circle.getCenterX());
-		transition.setToY(y - circle.getCenterY());
-
-		transition.playFromStart();
-	}
+		 * moves the circle to the position x and y
+		 * 
+		 * @param circle
+		 * @param transition
+		 * @param rec2
+		 * @param rec1
+		 */
+		private void moveCircleOnSpacePress(final Circle circle, final TranslateTransition transition) {
+			transition.setToX(x - circle.getCenterX());
+			transition.setToY(y - circle.getCenterY());
+			if(end == false) {
+				transition.playFromStart();
+			}
+		}
 
 	/**
 	 * Moves the Rectangulars up or down
@@ -346,7 +355,7 @@ public class moving2Start2 extends Application {
 		}
 
 		if (r12 == true) {
-			if (rec1.getLayoutY() == 340) {
+			if (rec1.getLayoutY() == 350) {
 
 			} else {
 				rec1.setLayoutY(rec1.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
@@ -364,7 +373,7 @@ public class moving2Start2 extends Application {
 		}
 
 		if (r22 == true) {
-			if (rec2.getLayoutY() == 340) {
+			if (rec2.getLayoutY() == 350) {
 
 			} else {
 				rec2.setLayoutY(rec2.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
@@ -385,8 +394,6 @@ public class moving2Start2 extends Application {
 			text = "GG. Player 2 won! Click Ok to exit.";
 		}
 
-		randomNumX = 0;
-		randomNumY = 0;
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle(null);
 		alert.setHeaderText(null);
@@ -395,7 +402,5 @@ public class moving2Start2 extends Application {
 		alert.setOnHidden(evt -> Platform.exit());
 
 		alert.show();
-
-		alert.showAndWait();
 	}
 }
