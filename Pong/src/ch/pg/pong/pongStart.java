@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -44,7 +45,8 @@ public class pongStart extends Application {
 		final Circle circle = createCircle();
 		final Rectangle rec1 = createRectangle1();
 		final Rectangle rec2 = createRectangle2();
-		final Group group = new Group(createInstructions(), circle, rec1, rec2);
+		final Line middle = createLine();
+		final Group group = new Group(createInstructions(), circle, rec1, rec2, middle);
 		final TranslateTransition transition = createTranslateTransition(circle, rec1, rec2);
 
 		final Scene scene = new Scene(group, 1000, 500, Color.CORNSILK);
@@ -62,7 +64,7 @@ public class pongStart extends Application {
 	 * @return
 	 */
 	private Label createInstructions() {
-		Label instructions = new Label("Use the UP DOWN keys to move the right. Use the S W Keys to Move the left");
+		Label instructions = new Label("Use the UP DOWN keys to move the right. Use the W S Keys to Move the left. Press Space to Start");
 		instructions.setTextFill(Color.FORESTGREEN);
 		return instructions;
 	}
@@ -73,8 +75,7 @@ public class pongStart extends Application {
 	 * @return
 	 */
 	private Circle createCircle() {
-		final Circle circle = new Circle(500, 200, 20, Color.BLUEVIOLET);
-		circle.setOpacity(0.7);
+		final Circle circle = new Circle(500, 200, 20, Color.BLACK);
 		return circle;
 	}
 
@@ -84,8 +85,7 @@ public class pongStart extends Application {
 	 * @return
 	 */
 	private Rectangle createRectangle1() {
-		final Rectangle Rectangle1 = new Rectangle(20, 150, Color.BLUEVIOLET);
-		Rectangle1.setOpacity(0.7);
+		final Rectangle Rectangle1 = new Rectangle(20, 150, Color.BLUE);
 		Rectangle1.setLayoutX(970);
 		Rectangle1.setLayoutY(150);
 		return Rectangle1;
@@ -97,11 +97,21 @@ public class pongStart extends Application {
 	 * @return
 	 */
 	private Rectangle createRectangle2() {
-		final Rectangle Rectangle2 = new Rectangle(20, 150, Color.BLUEVIOLET);
-		Rectangle2.setOpacity(0.7);
+		final Rectangle Rectangle2 = new Rectangle(20, 150, Color.RED);
 		Rectangle2.setLayoutX(10);
 		Rectangle2.setLayoutY(150);
 		return Rectangle2;
+	}
+	
+	/**
+	 * creates a line in the middle 
+	 * from X500 and Y0 to X500 and Y550
+	 * 
+	 * @return
+	 */
+	private Line createLine() {
+		final Line middle = new Line(500, 0, 500, 550);
+		return middle;
 	}
 
 	/**
@@ -334,6 +344,8 @@ public class pongStart extends Application {
 			transition.setToY(y - circle.getCenterY());
 			if(end == false) {
 				transition.playFromStart();
+			}else {
+				transition.stop();
 			}
 		}
 
