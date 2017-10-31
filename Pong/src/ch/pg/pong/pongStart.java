@@ -1,4 +1,4 @@
-package ch.pg.moving2;
+package ch.pg.pong;
 
 import java.util.Random;
 
@@ -18,7 +18,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class moving2Start2 extends Application {
+public class pongStart extends Application {
 	private static int KEYBOARD_MOVEMENT_DELTA = 5;
 	private static final Duration TRANSLATE_DURATION = Duration.millis(1);
 
