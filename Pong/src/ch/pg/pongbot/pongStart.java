@@ -1,4 +1,4 @@
-package ch.pg.pong;
+package ch.pg.pongbot;
 
 import java.util.Random;
 
@@ -23,7 +23,7 @@ public class pongStart extends Application {
 	private static int KEYBOARD_MOVEMENT_DELTA = 5;
 	private static final Duration TRANSLATE_DURATION = Duration.millis(1);
 
-	private static boolean r11 = false, r12 = false, r21 = false, r22 = false, end = false;
+	private static boolean r11 = false, r12 = false, end = false;
 
 	static int x = 500, y = 200, min = 3, max = 7, coutup = 0;
 
@@ -64,8 +64,7 @@ public class pongStart extends Application {
 	 * @return
 	 */
 	private Label createInstructions() {
-		Label instructions = new Label(
-				"Use the UP DOWN keys to move the right. Use the W S Keys to Move the left. Press Space to Start");
+		Label instructions = new Label("Use the UP DOWN keys to move the left. Press Space to Start");
 		instructions.setTextFill(Color.FORESTGREEN);
 		return instructions;
 	}
@@ -81,7 +80,7 @@ public class pongStart extends Application {
 	}
 
 	/**
-	 * sets the left Rectangle with position and size
+	 * sets the right Rectangle with position and size
 	 * 
 	 * @return
 	 */
@@ -93,7 +92,7 @@ public class pongStart extends Application {
 	}
 
 	/**
-	 * sets the right Rectangle with position and size
+	 * sets the left Rectangle with position and size
 	 * 
 	 * @return
 	 */
@@ -118,8 +117,8 @@ public class pongStart extends Application {
 	 * the repeat for the Rectangulars and the Circle
 	 * 
 	 * @param circle
-	 * @param rec2
 	 * @param rec1
+	 * @param rec2
 	 * @return
 	 */
 	private TranslateTransition createTranslateTransition(final Circle circle, final Rectangle rec1,
@@ -128,7 +127,7 @@ public class pongStart extends Application {
 		transition.setOnFinished(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent t) {
-				Keymovent(rec1, rec2);
+				Keymovent(rec1, rec2, circle);
 				if (circle.getCenterX() <= 5) {
 					player = 1;
 					end = true;
@@ -149,16 +148,6 @@ public class pongStart extends Application {
 						top = true;
 						bottom = false;
 					}
-				
-				} else if (circle.getCenterY() <= (rec1.getLayoutY() + 150) && circle.getCenterY() >= rec1.getLayoutY()
-						&& circle.getCenterX() >= 950 && right == true) {
-					// Right Box
-					Random r = new Random();
-					randomNumX = r.nextInt(max - min) + min;
-					left = true;
-					right = false;
-
-					coutup++;
 				} else if (circle.getCenterY() <= (rec2.getLayoutY() + 150) && circle.getCenterY() >= rec2.getLayoutY()
 						&& circle.getCenterX() <= 50 && left == true) {
 					// left Box
@@ -166,6 +155,15 @@ public class pongStart extends Application {
 					randomNumX = r.nextInt(max - min) + min;
 					left = false;
 					right = true;
+
+					coutup++;
+				} else if (circle.getCenterY() <= (rec1.getLayoutY() + 150) && circle.getCenterY() >= rec1.getLayoutY()
+						&& circle.getCenterX() >= 950 && right == true) {
+					// Right Box
+					Random r = new Random();
+					randomNumX = r.nextInt(max - min) + min;
+					left = true;
+					right = false;
 
 					coutup++;
 				}
@@ -278,22 +276,6 @@ public class pongStart extends Application {
 						r12 = true;
 					}
 				}
-
-				if (event.getCode() == KeyCode.W) {
-					if (rec2.getLayoutY() == 10) {
-
-					} else {
-						r21 = true;
-					}
-				}
-
-				if (event.getCode() == KeyCode.S) {
-					if (rec2.getLayoutY() == 350) {
-
-					} else {
-						r22 = true;
-					}
-				}
 			}
 		});
 	}
@@ -315,14 +297,6 @@ public class pongStart extends Application {
 
 				if (event.getCode() == KeyCode.DOWN) {
 					r12 = false;
-				}
-
-				if (event.getCode() == KeyCode.W) {
-					r21 = false;
-				}
-
-				if (event.getCode() == KeyCode.S) {
-					r22 = false;
 				}
 			}
 		});
@@ -353,40 +327,36 @@ public class pongStart extends Application {
 	 * @param rec2
 	 */
 	@FXML
-	public void Keymovent(final Rectangle rec1, final Rectangle rec2) {
+	public void Keymovent(final Rectangle rec1, final Rectangle rec2, final Circle circle) {
 		if (r11 == true) {
-			if (rec1.getLayoutY() < 10) {
+			if (rec1.getLayoutY() == 10) {
 
 			} else {
 				rec1.setLayoutY(rec1.getLayoutY() - KEYBOARD_MOVEMENT_DELTA);
-				r11 = true;
 			}
 		}
 
 		if (r12 == true) {
-			if (rec1.getLayoutY() > 350) {
+			if (rec1.getLayoutY() == 350) {
 
 			} else {
 				rec1.setLayoutY(rec1.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
-				r12 = true;
 			}
 		}
 
-		if (r21 == true) {
-			if (rec2.getLayoutY() < 10) {
+		if (rec2.getLayoutY() > circle.getCenterY()) {
+			if (rec2.getLayoutY() == 10) {
 
 			} else {
 				rec2.setLayoutY(rec2.getLayoutY() - KEYBOARD_MOVEMENT_DELTA);
-				r21 = true;
 			}
 		}
 
-		if (r22 == true) {
-			if (rec2.getLayoutY() > 350) {
+		if (rec2.getLayoutY() < circle.getCenterY()) {
+			if (rec2.getLayoutY() == 350) {
 
 			} else {
 				rec2.setLayoutY(rec2.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
-				r22 = true;
 			}
 		}
 	}
@@ -398,9 +368,9 @@ public class pongStart extends Application {
 	public void End() {
 		String text = null;
 		if (player == 1) {
-			text = "GG. Player 1 won! Click Ok to exit.";
+			text = "GG. YOU won! Click Ok to exit.";
 		} else if (player == 2) {
-			text = "GG. Player 2 won! Click Ok to exit.";
+			text = "GG. the Bot won! Click Ok to exit.";
 		}
 
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
