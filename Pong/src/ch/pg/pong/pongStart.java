@@ -4,14 +4,15 @@ import java.util.Random;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -27,11 +28,13 @@ public class pongStart extends Application {
 
 	static int x = 500, y = 200, min = 3, max = 7, coutup = 0;
 
-	private static boolean top = false, bottom = true, right = true, left = false;
+	private static boolean top = false, bottom = true, right = true, left = false, space = true;
 
-	int player = 0;
+	int player = 0, playercount = 0, winsplayer1 = 0, winsplayer2 = 0;
 
 	int randomNumX = 3, randomNumY = 3;
+
+	Scene scene1, scene2, scene3;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -42,28 +45,74 @@ public class pongStart extends Application {
 	 */
 	@Override
 	public void start(Stage stage) throws Exception {
+		// for the game with the Bot
+		final Circle circlebot = createCircle();
+		final Rectangle rec1bot = createRectangle1();
+		final Rectangle rec2bot = createRectangle2();
+		final Line middlebot = createLine();
+
+		// for the Game 2 player
 		final Circle circle = createCircle();
 		final Rectangle rec1 = createRectangle1();
 		final Rectangle rec2 = createRectangle2();
 		final Line middle = createLine();
-		final Group group = new Group(createInstructions(), circle, rec1, rec2, middle);
-		final TranslateTransition transition = createTranslateTransition(circle, rec1, rec2);
 
-		final Scene scene = new Scene(group, 1000, 500, Color.CORNSILK);
-		moveRecOnKeyPress(scene, rec1, rec2, circle, transition);
-		moveRecOnKeyRelease(scene, rec1, rec2);
+		final Group group1 = new Group(createInstructions1(), circlebot, rec1bot, rec2bot, middlebot);
+		final Group group2 = new Group(createInstructions2(), circle, rec1, rec2, middle);
+		final TranslateTransition transition1 = createTranslateTransition(circlebot, rec1bot, rec2bot, stage);
+		final TranslateTransition transition2 = createTranslateTransition(circle, rec1, rec2, stage);
 
-		stage.setScene(scene);
+		// creates the Label and the Buttons that will show in scene1
+		Label label1 = new Label("One Player or Two Player");
+		Button button1 = new Button("1 Player");
+		Button button2 = new Button("2 PLayer");
+
+		// change the scene if Button1 or Button2 was pressed
+		button1.setOnAction(e -> stage.setScene(scene2));
+		button2.setOnAction(e -> stage.setScene(scene3));
+
+		VBox layout1 = new VBox(20);
+		layout1.getChildren().addAll(label1, button1, button2);
+		scene1 = new Scene(layout1, 200, 200);
+
+		scene2 = new Scene(group1, 1001, 501, Color.CORNSILK);
+		scene3 = new Scene(group2, 1000, 500, Color.CORNSILK);
+
+		moveRecOnKeyPress(scene2, rec1, rec2, circle, transition1);
+		moveRecOnKeyRelease(scene2);
+
+		moveRecOnKeyPress(scene3, rec1, rec2, circle, transition2);
+		moveRecOnKeyRelease(scene3);
+
+		stage.setScene(scene1);
+		stage.setTitle("PONG");
 		stage.setResizable(false);
 		stage.show();
 	}
 
 	/**
-	 * creates an label at the top of the Scene
+	 * creates an label at the top of the Scene and places all the Circle
+	 * Rectangulars and the Line in the Scene and sets the Playercout to one because
+	 * for playing against an Bot
 	 * 
 	 * @return
 	 */
-	private Label createInstructions() {
+	private Label createInstructions1() {
+		playercount = 1;
+		Label instructions = new Label("Use the UP DOWN keys to move UP and DOWN. Press Space to Start");
+		instructions.setTextFill(Color.FORESTGREEN);
+		return instructions;
+	}
+
+	/**
+	 * creates an label at the top of the Scene and places all the Circle
+	 * Rectangulars and the Line in the Scene and sets the Playercout to two because
+	 * for playing against an other Player
+	 * 
+	 * @return
+	 */
+	private Label createInstructions2() {
+		playercount = 2;
 		Label instructions = new Label(
 				"Use the UP DOWN keys to move the right. Use the W S Keys to Move the left. Press Space to Start");
 		instructions.setTextFill(Color.FORESTGREEN);
@@ -71,7 +120,7 @@ public class pongStart extends Application {
 	}
 
 	/**
-	 * creates the Circle to a specific location and a Radius
+	 * creates the Circle to a specific location and a Radius and color
 	 * 
 	 * @return
 	 */
@@ -81,7 +130,7 @@ public class pongStart extends Application {
 	}
 
 	/**
-	 * sets the left Rectangle with position and size
+	 * sets the left Rectangle with position and size and color
 	 * 
 	 * @return
 	 */
@@ -93,7 +142,7 @@ public class pongStart extends Application {
 	}
 
 	/**
-	 * sets the right Rectangle with position and size
+	 * sets the right Rectangle with position and size and color
 	 * 
 	 * @return
 	 */
@@ -117,18 +166,28 @@ public class pongStart extends Application {
 	/**
 	 * the repeat for the Rectangulars and the Circle
 	 * 
+	 * if its reach top or bottom it will bounce. also when the circle comes against
+	 * an Rectangular
+	 * 
 	 * @param circle
-	 * @param rec2
 	 * @param rec1
+	 * @param rec2
 	 * @return
 	 */
 	private TranslateTransition createTranslateTransition(final Circle circle, final Rectangle rec1,
-			final Rectangle rec2) {
+			final Rectangle rec2, Stage stage) {
 		final TranslateTransition transition = new TranslateTransition(TRANSLATE_DURATION, circle);
 		transition.setOnFinished(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent t) {
-				Keymovent(rec1, rec2);
+				
+				if(stage.getScene().getHeight() == 501) {
+					playercount = 1;
+				}else {
+					playercount = 2;
+				}
+				
+				Keymovent(rec1, rec2, circle);
 				if (circle.getCenterX() <= 5) {
 					player = 1;
 					end = true;
@@ -137,22 +196,22 @@ public class pongStart extends Application {
 					end = true;
 				} else if (circle.getCenterY() >= 480 || circle.getCenterY() <= 20) {
 					if (circle.getCenterY() >= 490 && top == true) {
-						// bottom
+						// bottom bounce
 						Random r = new Random();
 						randomNumY = r.nextInt(max - min) + min;
 						top = false;
 						bottom = true;
 					} else if (circle.getCenterY() <= 20 && bottom == true) {
-						// Top
+						// Top bounce
 						Random r = new Random();
 						randomNumY = r.nextInt(max - min) + min;
 						top = true;
 						bottom = false;
 					}
-				
+
 				} else if (circle.getCenterY() <= (rec1.getLayoutY() + 150) && circle.getCenterY() >= rec1.getLayoutY()
 						&& circle.getCenterX() >= 950 && right == true) {
-					// Right Box
+					// Right Box bounce
 					Random r = new Random();
 					randomNumX = r.nextInt(max - min) + min;
 					left = true;
@@ -161,7 +220,7 @@ public class pongStart extends Application {
 					coutup++;
 				} else if (circle.getCenterY() <= (rec2.getLayoutY() + 150) && circle.getCenterY() >= rec2.getLayoutY()
 						&& circle.getCenterX() <= 50 && left == true) {
-					// left Box
+					// left Box bounce
 					Random r = new Random();
 					randomNumX = r.nextInt(max - min) + min;
 					left = false;
@@ -183,6 +242,7 @@ public class pongStart extends Application {
 				}
 
 				switch (coutup) {
+				// speed up the ball / circle after X bounces by the Rectangulars
 				case 10:
 					min = min + 1;
 					max = max + 1;
@@ -236,13 +296,11 @@ public class pongStart extends Application {
 				circle.setTranslateY(0);
 
 				if (end == true) {
-					End();
+					// ends if the ball / circle touches the left or write wall
+					End(circle, rec1, rec2, stage);
 
 					transition.pause();
 					transition.stop();
-
-					randomNumX = 0;
-					randomNumY = 0;
 				}
 				moveCircleOnSpacePress(circle, transition);
 			}
@@ -251,15 +309,17 @@ public class pongStart extends Application {
 	}
 
 	/*
-	 * gets the Key press and gets the code to true
+	 * gets the Key press and gets the code to true and if the Rectangular is at the
+	 * top or at the Bottom it will not go further
 	 */
 	private void moveRecOnKeyPress(Scene scene, final Rectangle rec2, final Rectangle rec1, final Circle circle,
 			final TranslateTransition transition) {
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-
-				if (event.getCode() == KeyCode.SPACE) {
+				if (event.getCode() == KeyCode.SPACE && space == true) {
+					end = false;
+					space = false;
 					moveCircleOnSpacePress(circle, transition);
 				}
 
@@ -279,19 +339,21 @@ public class pongStart extends Application {
 					}
 				}
 
-				if (event.getCode() == KeyCode.W) {
-					if (rec2.getLayoutY() == 10) {
+				if (playercount == 2) {
+					if (event.getCode() == KeyCode.W) {
+						if (rec2.getLayoutY() == 10) {
 
-					} else {
-						r21 = true;
+						} else {
+							r21 = true;
+						}
 					}
-				}
 
-				if (event.getCode() == KeyCode.S) {
-					if (rec2.getLayoutY() == 350) {
+					if (event.getCode() == KeyCode.S) {
+						if (rec2.getLayoutY() == 350) {
 
-					} else {
-						r22 = true;
+						} else {
+							r22 = true;
+						}
 					}
 				}
 			}
@@ -302,10 +364,8 @@ public class pongStart extends Application {
 	 * gets the Key Release and sets the code to false
 	 * 
 	 * @param scene
-	 * @param rec2
-	 * @param rec1
 	 */
-	private void moveRecOnKeyRelease(Scene scene, final Rectangle rec2, final Rectangle rec1) {
+	private void moveRecOnKeyRelease(Scene scene) {
 		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
@@ -317,12 +377,14 @@ public class pongStart extends Application {
 					r12 = false;
 				}
 
-				if (event.getCode() == KeyCode.W) {
-					r21 = false;
-				}
+				if (playercount == 2) {
+					if (event.getCode() == KeyCode.W) {
+						r21 = false;
+					}
 
-				if (event.getCode() == KeyCode.S) {
-					r22 = false;
+					if (event.getCode() == KeyCode.S) {
+						r22 = false;
+					}
 				}
 			}
 		});
@@ -333,8 +395,6 @@ public class pongStart extends Application {
 	 * 
 	 * @param circle
 	 * @param transition
-	 * @param rec2
-	 * @param rec1
 	 */
 	private void moveCircleOnSpacePress(final Circle circle, final TranslateTransition transition) {
 		transition.setToX(x - circle.getCenterX());
@@ -353,7 +413,7 @@ public class pongStart extends Application {
 	 * @param rec2
 	 */
 	@FXML
-	public void Keymovent(final Rectangle rec1, final Rectangle rec2) {
+	public void Keymovent(final Rectangle rec1, final Rectangle rec2, final Circle circle) {
 		if (r11 == true) {
 			if (rec1.getLayoutY() < 10) {
 
@@ -372,35 +432,60 @@ public class pongStart extends Application {
 			}
 		}
 
-		if (r21 == true) {
-			if (rec2.getLayoutY() < 10) {
+		if (playercount == 1) {
+			if (rec2.getLayoutY() + 75 > circle.getCenterY()) {
+				if (rec2.getLayoutY() == 10) {
 
-			} else {
-				rec2.setLayoutY(rec2.getLayoutY() - KEYBOARD_MOVEMENT_DELTA);
-				r21 = true;
+				} else {
+					rec2.setLayoutY(rec2.getLayoutY() - KEYBOARD_MOVEMENT_DELTA);
+				}
 			}
-		}
 
-		if (r22 == true) {
-			if (rec2.getLayoutY() > 350) {
+			if (rec2.getLayoutY() + 75 < circle.getCenterY()) {
+				if (rec2.getLayoutY() == 350) {
 
-			} else {
-				rec2.setLayoutY(rec2.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
-				r22 = true;
+				} else {
+					rec2.setLayoutY(rec2.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
+				}
+			}
+		} else {
+			if (r21 == true) {
+				if (rec2.getLayoutY() < 10) {
+
+				} else {
+					rec2.setLayoutY(rec2.getLayoutY() - KEYBOARD_MOVEMENT_DELTA);
+					r21 = true;
+				}
+			}
+
+			if (r22 == true) {
+				if (rec2.getLayoutY() > 350) {
+
+				} else {
+					rec2.setLayoutY(rec2.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
+					r22 = true;
+				}
 			}
 		}
 	}
 
 	/**
-	 * Pop up at the end to now if Player 1 or Player 2 has won
+	 * Pop up at the end to now if Player 1 or Player 2 / Bot has won and Resets
+	 * every thing for to restart
 	 */
 	@FXML
-	public void End() {
+	public void End(final Circle circle, final Rectangle rec1, final Rectangle rec2, Stage stage) {
 		String text = null;
 		if (player == 1) {
+			winsplayer1++;
 			text = "GG. Player 1 won! Click Ok to exit.";
 		} else if (player == 2) {
-			text = "GG. Player 2 won! Click Ok to exit.";
+			if (playercount == 1) {
+				text = "GG. The Bot won! Click Ok to exit.";
+			} else {
+				text = "GG. Player 2 won! Click Ok to exit.";
+			}
+			winsplayer2++;
 		}
 
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -408,7 +493,26 @@ public class pongStart extends Application {
 		alert.setHeaderText(null);
 		alert.setContentText(text);
 
-		alert.setOnHidden(evt -> Platform.exit());
+		// reset all nececary options
+		circle.setCenterX(500);
+		circle.setCenterY(200);
+		rec1.setLayoutY(150);
+		rec2.setLayoutY(150);
+		min = 3;
+		max = 7;
+		coutup = 0;
+		top = false;
+		bottom = true;
+		right = true;
+		left = false;
+		space = true;
+		x = 500;
+		y = 200;
+		player = 0;
+		randomNumX = 3;
+		randomNumY = 3;
+
+		alert.setOnHidden(e -> stage.setScene(scene1));
 
 		alert.show();
 	}
