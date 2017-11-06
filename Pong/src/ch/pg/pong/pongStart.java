@@ -50,6 +50,7 @@ public class pongStart extends Application {
 	 */
 	@Override
 	public void start(Stage stage) throws Exception {
+		
 		// creates the Label and the Buttons that will show in scene1
 		label1 = new Label("One Player or Two Player");
 		label2 = new Label("Player one: " + winsplayer1 + "\nPlayer two: " + winsplayer2 + "\n\nBot: " + winsbot
@@ -442,7 +443,7 @@ public class pongStart extends Application {
 		}
 
 		if (r12 == true) {
-			if (rec1.getLayoutY() > 350) {
+			if (rec1.getLayoutY() > 340) {
 
 			} else {
 				rec1.setLayoutY(rec1.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
@@ -477,7 +478,7 @@ public class pongStart extends Application {
 			}
 
 			if (r22 == true) {
-				if (rec2.getLayoutY() > 350) {
+				if (rec2.getLayoutY() > 340) {
 
 				} else {
 					rec2.setLayoutY(rec2.getLayoutY() + KEYBOARD_MOVEMENT_DELTA);
@@ -543,8 +544,6 @@ public class pongStart extends Application {
 		player = 0;
 		randomNumX = 3;
 		randomNumY = 3;
-
-		System.out.println(winsplayer1 + " " + winsplayer2 + " " + winsbot);
 
 		label2 = new Label("Player one: " + winsplayer1 + "\nPlayer two: " + winsplayer2 + "\n\nBot: " + winsbot
 				+ "\nPlayerBot: " + winsplayerbot);
