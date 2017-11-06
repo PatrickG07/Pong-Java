@@ -29,11 +29,14 @@ public class pongStart extends Application {
 
 	private static boolean top = false, bottom = true, right = true, left = false, space = true;
 
-	int player = 0, playercount = 0, winsbot = 0, winsplayer1 = 0, winsplayer2 = 0;
+	int player = 0, playercount = 0, winsbot = 0, winsplayerbot = 0, winsplayer1 = 0, winsplayer2 = 0;
 
 	int randomNumX = 3, randomNumY = 3;
 
 	Scene scene1, scene2, scene3;
+
+	static Label label1, label2;
+	static Button button1, button2;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -42,24 +45,23 @@ public class pongStart extends Application {
 	/**
 	 * creates the objects in the Scenes.
 	 * 
-	 * scene1 label1, label2, button1, button2
-	 * scene2 label, circlebot, rec1bot, rec2bot, middlebot
-	 * scene3 label, circle, rec1, rec2, middle
+	 * scene1 label1, label2, button1, button2 scene2 label, circlebot, rec1bot,
+	 * rec2bot, middlebot scene3 label, circle, rec1, rec2, middle
 	 */
 	@Override
 	public void start(Stage stage) throws Exception {
 		// creates the Label and the Buttons that will show in scene1
-		final Label label1 = new Label("One Player or Two Player");
-		final Label label2 = new Label(
-				"Player one: " + winsplayer1 + "\nPlayer two: " + winsplayer2 + "\nBot: " + winsbot);
+		label1 = new Label("One Player or Two Player");
+		label2 = new Label("Player one: " + winsplayer1 + "\nPlayer two: " + winsplayer2 + "\n\nBot: " + winsbot
+				+ "\nPlayerBot: " + winsplayerbot);
 		label2.setLayoutY(30);
-		
-		final Button button1 = new Button("1 Player");
-		button1.setLayoutX(70);
-		button1.setLayoutY(90);
-		
-		final Button button2 = new Button("2 Player");
-		button2.setLayoutX(70);
+
+		button1 = new Button("1 Player");
+		button1.setLayoutX(20);
+		button1.setLayoutY(140);
+
+		button2 = new Button("2 Player");
+		button2.setLayoutX(100);
 		button2.setLayoutY(140);
 
 		// for the game with the Bot
@@ -174,7 +176,8 @@ public class pongStart extends Application {
 	 * the repeat for the Rectangulars and the Circle
 	 * 
 	 * if its reach top or bottom it will bounce. also when the circle comes against
-	 * an Rectangular, if it reach the left or the right border the opposite Person will win.
+	 * an Rectangular, if it reach the left or the right border the opposite Person
+	 * will win.
 	 * 
 	 * @param circle
 	 * @param rec1
@@ -497,7 +500,11 @@ public class pongStart extends Application {
 	public void End(final Circle circle, final Rectangle rec1, final Rectangle rec2, Stage stage) {
 		String text = null;
 		if (player == 1) {
-			winsplayer1++;
+			if (stage.getScene().getHeight() == 501) {
+				winsplayerbot++;
+			} else {
+				winsplayer1++;
+			}
 			text = "GG. Player 1 won! Click Ok to exit.";
 		} else if (player == 2) {
 			if (playercount == 1) {
@@ -536,8 +543,16 @@ public class pongStart extends Application {
 		player = 0;
 		randomNumX = 3;
 		randomNumY = 3;
-		
-		
+
+		System.out.println(winsplayer1 + " " + winsplayer2 + " " + winsbot);
+
+		label2 = new Label("Player one: " + winsplayer1 + "\nPlayer two: " + winsplayer2 + "\n\nBot: " + winsbot
+				+ "\nPlayerBot: " + winsplayerbot);
+		label2.setLayoutY(30);
+
+		final Group group1 = new Group(label1, label2, button1, button2);
+		scene1 = new Scene(group1, 200, 200);
+
 		alert.setOnHidden(e -> stage.setScene(scene1));
 		alert.show();
 	}
