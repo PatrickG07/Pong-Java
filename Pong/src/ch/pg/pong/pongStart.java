@@ -36,6 +36,7 @@ public class pongStart extends Application {
 	Scene scene1, scene2, scene3;
 
 	static Label label1, label2;
+	
 	static Button button1, button2;
 
 	public static void main(String[] args) {
@@ -92,7 +93,7 @@ public class pongStart extends Application {
 		scene2 = new Scene(group2, 1001, 501, Color.CORNSILK);
 		scene3 = new Scene(group3, 1000, 500, Color.CORNSILK);
 
-		moveRecOnKeyPress(scene2, rec1, rec2, circle, transition1);
+		moveRecOnKeyPress(scene2, rec1bot, rec2bot, circlebot, transition1);
 		moveRecOnKeyRelease(scene2);
 
 		moveRecOnKeyPress(scene3, rec1, rec2, circle, transition2);
@@ -193,7 +194,8 @@ public class pongStart extends Application {
 			@Override
 			public void handle(ActionEvent t) {
 				// gets the Height of the active stage for knowing it is scene1 or scene2
-				if (stage.getScene().getHeight() == 501) {
+				System.out.println(stage.getScene().getHeight());
+				if (stage.getScene().getHeight() != 500) {
 					playercount = 1;
 				} else {
 					playercount = 2;
