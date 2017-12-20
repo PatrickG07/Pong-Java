@@ -194,7 +194,6 @@ public class pongStart extends Application {
 			@Override
 			public void handle(ActionEvent t) {
 				// gets the Height of the active stage for knowing it is scene1 or scene2
-				System.out.println(stage.getScene().getHeight());
 				if (stage.getScene().getHeight() != 500) {
 					playercount = 1;
 				} else {
